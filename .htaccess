@@ -1,0 +1,7 @@
+DirectoryIndex ssr.cgi
+Options +ExecCGI
+AddHandler cgi-script .cgi
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ ssr.cgi/$1 [L]

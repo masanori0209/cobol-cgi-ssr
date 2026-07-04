@@ -1,0 +1,5 @@
+cgi-bin/
+reports/run-all.log
+data/posts.dat
+data/session.seq
+data/sessions/*
