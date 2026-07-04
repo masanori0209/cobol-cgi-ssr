@@ -3,7 +3,7 @@
 
        data division.
        working-storage section.
-       copy "thevars.cpy".
+       copy "pagectx.cpy".
        01 req-type pic x(10) value "LOOKUP".
        01 lookup-id pic x(4).
        01 lookup-found pic x(1).
@@ -13,7 +13,6 @@
        01 dummy-add-title pic x(40).
        01 dummy-add-body pic x(120).
        01 dummy-add-id pic x(4).
-       01 nav-html pic x(512).
        01 body-buffer pic x(1024).
 
        linkage section.
@@ -30,28 +29,23 @@
                lookup-id lookup-found lookup-title lookup-body
                dummy-list
                dummy-add-title dummy-add-body dummy-add-id
-           call 'cgihtmlhdr'
-           call 'navbuild' using cgictx nav-html
-           move "page_title" to SSR-varname(1)
-           move "page_body" to SSR-varname(2)
-           move "nav_user" to SSR-varname(3)
-           move nav-html to SSR-varvalue(3)
+           move spaces to page-ctx
            if lookup-found = "n"
-               move "404 Not found" to SSR-varvalue(1)
+               move "404 Not found" to page-title
                move
                    "<p>Unknown post id.</p><p><a href='/posts'>Back to list</a></p>"
-                   to SSR-varvalue(2)
+                   to page-body
            else
-               move lookup-title to SSR-varvalue(1)
+               move lookup-title to page-title
                string
                    "<article><p>" delimited by size
                    function trim(lookup-body) delimited by space
                    "</p><p><a href='/posts'>Back to list</a></p></article>"
                    delimited by size
                    into body-buffer
-               move body-buffer to SSR-varvalue(2)
+               move body-buffer to page-body
            end-if
-           call 'ssrtemplate' using the-vars "layout.cow"
+           call 'renderpage' using page-ctx cgictx
            goback.
 
        end program postdetail.

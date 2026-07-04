@@ -1,0 +1,3 @@
+<p>GnuCOBOL + CGI generates HTML on every request (SSR).</p>
+<p id="js-status" class="js-hint">Waiting for client script…</p>
+<button type="button" class="btn" id="demo-toggle">Toggle main highlight</button>

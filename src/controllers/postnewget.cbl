@@ -3,8 +3,7 @@
 
        data division.
        working-storage section.
-       copy "thevars.cpy".
-       01 nav-html pic x(512).
+       copy "pagectx.cpy".
        01 redirect-to pic x(256) value "/login".
        01 cookie-line pic x(256) value spaces.
 
@@ -20,18 +19,12 @@
                call 'cgiredirect' using redirect-to cookie-line
                goback
            end-if
-           call 'cgihtmlhdr'
-           call 'navbuild' using cgictx nav-html
-           move spaces to the-vars
-           move "page_title" to SSR-varname(1)
-           move "New post" to SSR-varvalue(1)
-           move "page_body" to SSR-varname(2)
+           move spaces to page-ctx
+           move "New post" to page-title
            move
                "<form method='post' action='/posts/new'><label>Title <input name='title' required maxlength='40'></label><br><label>Body <textarea name='body' required maxlength='120'></textarea></label><br><button type='submit'>Save</button></form>"
-               to SSR-varvalue(2)
-           move "nav_user" to SSR-varname(3)
-           move nav-html to SSR-varvalue(3)
-           call 'ssrtemplate' using the-vars "layout.cow"
+               to page-body
+           call 'renderpage' using page-ctx cgictx
            goback.
 
        end program postnewget.

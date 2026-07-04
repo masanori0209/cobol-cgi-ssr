@@ -14,6 +14,8 @@ cobc -Wall -x -free \
   src/cgilib.cbl \
   src/navbuild.cbl \
   src/postsdata.cbl \
+  src/postlistfill.cbl \
+  src/renderpage.cbl \
   src/controllers/*.cbl \
   -o ssr.cgi
 echo "built ssr.cgi"

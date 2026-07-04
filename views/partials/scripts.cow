@@ -1,0 +1,7 @@
+  <script src="/static/app.js" defer></script>
+  {% if page_script %}
+  <script src="/static/{{page_script}}" defer></script>
+  {% endif %}
+  {% if extra_js %}
+  <script>{{extra_js}}</script>
+  {% endif %}

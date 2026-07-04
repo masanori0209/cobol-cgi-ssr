@@ -1,0 +1,10 @@
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/posts">Posts</a>
+      {% if session_user %}
+      <span class="nav-user">Logged in as {{session_user}}</span>
+      <a href="/posts/new">New post</a>
+      <a href="/logout">Logout</a>
+      {% else %}
+      <a href="/login">Login</a>
+      {% endif %}

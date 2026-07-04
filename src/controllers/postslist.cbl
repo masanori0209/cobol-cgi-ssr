@@ -4,10 +4,8 @@
        data division.
        working-storage section.
        copy "thevars.cpy".
-       01 list-html pic x(4096).
-       01 compact-list pic x(2048).
-       01 nav-html pic x(512).
-       01 body-extra pic x(512).
+       01 filled-count pic 9(4).
+       01 var-slot pic 9(4).
 
        linkage section.
        01 route-values.
@@ -17,32 +15,30 @@
        copy "cgictx.cpy".
 
        procedure division using route-values cgictx.
-           move
-               "<table><thead><tr><th>ID</th><th>Title</th></tr></thead><tbody>"
-               & "<tr><td>1</td><td><a href='/posts/1'>CGI was SSR from the beginning</a></td></tr>"
-               & "<tr><td>2</td><td><a href='/posts/2'>Routing costs more than rendering</a></td></tr>"
-               & "<tr><td>3</td><td><a href='/posts/3'>VOS3 EOL is a different migration</a></td></tr>"
-               & "</tbody></table>"
-               to list-html
            call 'cgihtmlhdr'
-           call 'navbuild' using cgictx nav-html
-           if ctx-session-user not = spaces
-               move "<p><a href='/posts/new'>Create a post</a></p>" to body-extra
-           else
-               move "<p>Login to create posts.</p>" to body-extra
-           end-if
            move spaces to the-vars
-           move "page_title" to SSR-varname(1)
-           move "Posts (indexed file)" to SSR-varvalue(1)
-           move "page_body" to SSR-varname(2)
-           move function trim(list-html trailing) to compact-list
-           move spaces to SSR-varvalue(2)
-           string
-               function trim(body-extra trailing) delimited by size
-               compact-list delimited by size
-               into SSR-varvalue(2)
-           move "nav_user" to SSR-varname(3)
-           move nav-html to SSR-varvalue(3)
+           call 'postlistfill' using the-vars filled-count
+           move filled-count to var-slot
+           add 1 to var-slot
+           move "page_title" to SSR-varname(var-slot)
+           move "Posts (indexed file)" to SSR-varvalue(var-slot)
+           add 1 to var-slot
+           move "session_user" to SSR-varname(var-slot)
+           move ctx-session-user to SSR-varvalue(var-slot)
+           add 1 to var-slot
+           move "page_template" to SSR-varname(var-slot)
+           move "posts/list.cow" to SSR-varvalue(var-slot)
+           add 1 to var-slot
+           move "extra_css" to SSR-varname(var-slot)
+           move
+               ".posts-table { margin-top: 0.5rem; }"
+               to SSR-varvalue(var-slot)
+           add 1 to var-slot
+           move "page_script" to SSR-varname(var-slot)
+           move "pages/posts.js" to SSR-varvalue(var-slot)
+           add 1 to var-slot
+           move "page_body" to SSR-varname(var-slot)
+           move spaces to SSR-varvalue(var-slot)
            call 'ssrtemplate' using the-vars "layout.cow"
            goback.
 
