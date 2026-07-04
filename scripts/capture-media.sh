@@ -26,13 +26,13 @@ shot() {
     "$OUT_DIR/$out"
 }
 
-shot "/" "cobol-cgi-ssr-home.png"
-shot "/posts" "cobol-cgi-ssr-posts.png"
-shot "/posts/1" "cobol-cgi-ssr-post-detail.png"
-shot "/login" "cobol-cgi-ssr-login.png"
+shot "/" "cobol-webfw-home.png"
+shot "/posts" "cobol-webfw-posts.png"
+shot "/posts/1" "cobol-webfw-post-detail.png"
+shot "/login" "cobol-webfw-login.png"
 # 記事で既に参照しているファイル名（一覧画面）
-cp "$OUT_DIR/cobol-cgi-ssr-posts.png" "$OUT_DIR/cobol-cgi-ssr-run-all.png"
+cp "$OUT_DIR/cobol-webfw-posts.png" "$OUT_DIR/cobol-webfw-run-all.png"
 
 echo "log: $LOG"
 echo "images:"
-ls -1 "$OUT_DIR"/cobol-cgi-ssr-*.png
+ls -1 "$OUT_DIR"/cobol-webfw-*.png

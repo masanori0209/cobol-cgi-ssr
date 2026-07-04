@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+{% include "partials/head.html" %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="site-brand">
+        <h1>cobol-webfw</h1>
+        <p class="site-tagline">GnuCOBOL + CGI · SSR per request</p>
+      </div>
+      <nav class="site-nav">
+{% include "partials/nav.html" %}
+      </nav>
+    </div>
+  </header>
+  <div class="page-shell">
+    <main class="page-main">
+      <h2>{{page_title}}</h2>
+      {{page_body}}
+      {% include page_template %}
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-meta">
+      <span>GnuCOBOL + CGI — cobol-webfw</span>
+      <span id="footer-rendered-at" class="badge badge-muted">SSR</span>
+    </div>
+  </footer>
+{% include "partials/scripts.html" %}
+</body>
+</html>

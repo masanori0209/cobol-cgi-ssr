@@ -30,7 +30,7 @@ renderpage=$(count_file src/renderpage.cbl)
 cgi=$(sum_glob src/cgilib.cbl src/cgihtmlhdr.cbl src/navbuild.cbl)
 posts=$(count_file src/postsdata.cbl)
 controllers=$(sum_glob src/controllers/*.cbl)
-views=$(find views -name '*.cow' -print0 2>/dev/null | xargs -0 wc -l 2>/dev/null | tail -1 | awk '{print $1}')
+views=$(find views -name '*.html' -print0 2>/dev/null | xargs -0 wc -l 2>/dev/null | tail -1 | awk '{print $1}')
 if [ -z "${views}" ]; then views=0; fi
 
 total=$((router + config + template + postlist + renderpage + cgi + posts + controllers))
@@ -46,7 +46,7 @@ page renderer,src/renderpage.cbl,${renderpage}
 CGI POST/cookie/session,cgilib+cgihtmlhdr+navbuild,${cgi}
 indexed data (posts.dat),src/postsdata.cbl,${posts}
 page controllers,src/controllers/*.cbl,${controllers}
-HTML views,views/*.cow,${views}
+HTML views,views/*.html,${views}
 total_cobol,,${total}
 total_views,,${views}
 EOF

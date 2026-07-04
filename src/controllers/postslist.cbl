@@ -27,19 +27,14 @@
            move ctx-session-user to SSR-varvalue(var-slot)
            add 1 to var-slot
            move "page_template" to SSR-varname(var-slot)
-           move "posts/list.cow" to SSR-varvalue(var-slot)
-           add 1 to var-slot
-           move "extra_css" to SSR-varname(var-slot)
-           move
-               ".posts-table { margin-top: 0.5rem; }"
-               to SSR-varvalue(var-slot)
+           move "posts/list.html" to SSR-varvalue(var-slot)
            add 1 to var-slot
            move "page_script" to SSR-varname(var-slot)
            move "pages/posts.js" to SSR-varvalue(var-slot)
            add 1 to var-slot
            move "page_body" to SSR-varname(var-slot)
            move spaces to SSR-varvalue(var-slot)
-           call 'ssrtemplate' using the-vars "layout.cow"
+           call 'ssrtemplate' using the-vars "layout.html"
            goback.
 
        end program postslist.

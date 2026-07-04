@@ -14,10 +14,8 @@
 
        procedure division using route-values cgictx.
            move spaces to page-ctx
-           move "About this demo" to page-title
-           move
-               "<p>POST form, cookie session, indexed file under data/posts.dat.</p>"
-               to page-body
+           move "About cobol-webfw" to page-title
+           move "pages/about.html" to page-template
            call 'renderpage' using page-ctx cgictx
            goback.
 

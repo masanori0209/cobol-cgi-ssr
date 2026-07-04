@@ -33,14 +33,21 @@
            if lookup-found = "n"
                move "404 Not found" to page-title
                move
-                   "<p>Unknown post id.</p><p><a href='/posts'>Back to list</a></p>"
+                   "<p class='empty-state'>Unknown post id.</p><p><a class='btn btn-secondary' href='/posts'>Back to list</a></p>"
                    to page-body
            else
                move lookup-title to page-title
                string
-                   "<article><p>" delimited by size
+                   "<article class='post-detail'>"
+                   "<span class='post-detail-meta'>Post #"
+                   delimited by size
+                   function trim(lookup-id) delimited by space
+                   "</span>"
+                   "<p class='post-detail-body'>" delimited by size
                    function trim(lookup-body) delimited by space
-                   "</p><p><a href='/posts'>Back to list</a></p></article>"
+                   "</p>"
+                   "<p><a class='btn btn-secondary' href='/posts'>Back to list</a></p>"
+                   "</article>"
                    delimited by size
                    into body-buffer
                move body-buffer to page-body

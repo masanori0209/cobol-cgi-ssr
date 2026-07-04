@@ -1,0 +1,23 @@
+<div class="posts-toolbar">
+  {% if session_user %}
+  <p class="posts-action"><a class="btn btn-primary" href="/posts/new">Create a post</a></p>
+  {% else %}
+  <p class="posts-hint">Login to create posts from this demo.</p>
+  {% endif %}
+  <p class="posts-meta" id="posts-meta">Loading post list…</p>
+</div>
+<div class="posts-table-wrap">
+  <table class="posts-table">
+    <thead>
+      <tr><th>ID</th><th>Title</th></tr>
+    </thead>
+    <tbody>
+{% for post in post_count %}
+      <tr data-post-id="{{post_id}}">
+        <td class="post-id">#{{post_id}}</td>
+        <td><a href="/posts/{{post_id}}">{{post_title}}</a></td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>

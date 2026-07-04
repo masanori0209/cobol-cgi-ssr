@@ -1,4 +1,4 @@
-      *> Render layout.cow with standard template variables (framework entry).
+      *> Render layout.html with standard template variables (framework entry).
 
        identification division.
        program-id. renderpage.
@@ -29,7 +29,7 @@
            move "page_script" to SSR-varname(7)
            move page-script to SSR-varvalue(7)
            if function trim(layout-name) = spaces
-               move "layout.cow" to layout-name
+               move "layout.html" to layout-name
            end-if
            call 'ssrtemplate' using the-vars layout-name
            goback.

@@ -14,8 +14,8 @@
 
        procedure division using route-values cgictx.
            move spaces to page-ctx
-           move "COBOL CGI SSR demo" to page-title
-           move "pages/home.cow" to page-template
+           move "Home" to page-title
+           move "pages/home.html" to page-template
            move "pages/home.js" to page-script
            call 'renderpage' using page-ctx cgictx
            goback.

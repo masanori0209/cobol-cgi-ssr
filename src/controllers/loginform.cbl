@@ -15,9 +15,7 @@
        procedure division using route-values cgictx.
            move spaces to page-ctx
            move "Login" to page-title
-           move
-               "<form method='post' action='/login'><label>Username <input name='username' required></label> <button type='submit'>Login</button></form>"
-               to page-body
+           move "pages/login.html" to page-template
            call 'renderpage' using page-ctx cgictx
            goback.
 

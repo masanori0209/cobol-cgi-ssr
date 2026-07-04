@@ -21,9 +21,7 @@
            end-if
            move spaces to page-ctx
            move "New post" to page-title
-           move
-               "<form method='post' action='/posts/new'><label>Title <input name='title' required maxlength='40'></label><br><label>Body <textarea name='body' required maxlength='120'></textarea></label><br><button type='submit'>Save</button></form>"
-               to page-body
+           move "pages/postnew.html" to page-template
            call 'renderpage' using page-ctx cgictx
            goback.
 

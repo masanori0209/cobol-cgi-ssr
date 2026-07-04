@@ -2,20 +2,29 @@
   'use strict';
 
   var status = document.getElementById('js-status');
+  var pathLabel = document.getElementById('path-label');
   var toggle = document.getElementById('demo-toggle');
-  var main = document.querySelector('main');
+  var main = document.querySelector('main.page-main');
 
   if (status) {
-    status.textContent = 'Client JavaScript is active (page script loaded).';
+    status.textContent = 'page script loaded';
+    status.classList.remove('js-hint');
   }
 
-  if (window.CobolSsr) {
-    window.CobolSsr.log('home.js ready');
+  if (pathLabel && window.CobolWebfw) {
+    pathLabel.textContent = window.CobolWebfw.path;
+  }
+
+  if (window.CobolWebfw) {
+    window.CobolWebfw.log('home.js ready');
   }
 
   if (toggle && main) {
     toggle.addEventListener('click', function () {
       main.classList.toggle('highlight');
+      toggle.textContent = main.classList.contains('highlight')
+        ? 'Remove highlight'
+        : 'Highlight main panel';
     });
   }
 })();

@@ -7,7 +7,7 @@ post list vars,src/postlistfill.cbl,86
 page renderer,src/renderpage.cbl,37
 CGI POST/cookie/session,cgilib+cgihtmlhdr+navbuild,286
 indexed data (posts.dat),src/postsdata.cbl,207
-page controllers,src/controllers/*.cbl,308
-HTML views,views/*.cow,65
-total_cobol,,1481
-total_views,,65
+page controllers,src/controllers/*.cbl,304
+HTML views,views/*.html,127
+total_cobol,,1477
+total_views,,127

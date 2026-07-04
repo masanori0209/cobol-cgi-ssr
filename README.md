@@ -1,79 +1,138 @@
-# cobol-cgi-ssr
+# cobol-webfw
 
-GnuCOBOL + CGI で Next.js の機能を分解し、実装行数を測るためのデモです。
+A minimal **server-side web framework** for [GnuCOBOL](https://gnucobol.sourceforge.io/) using **CGI**.
 
-- 記事: （公開後に Zenn URL を追記）
-- GitHub: https://github.com/masanori0209/cobol-cgi-ssr
+Each HTTP request runs a COBOL program that renders HTML on the server (SSR). The framework provides routing, HTML templates, form handling, cookie sessions, static assets, and optional page scripts—without a separate runtime or npm toolchain.
 
-## できること
+## Features
 
-| パス | メソッド | Next.js 相当 | 実装 |
-|---|---|---|---|
-| `/` | GET | 静的ページ | `home.cbl` |
-| `/about` | GET | 静的ページ | `about.cbl` |
-| `/posts` | GET | 一覧 SSR | `postslist.cbl` + `views/posts/list.cow`（`{% for %}`） |
-| `/posts/:id` | GET | 動的ルート + データ取得 | `postdetail.cbl` + `postserv` LOOKUP |
-| `/login` | GET/POST | 認証フォーム | `loginform.cbl` / `loginpost.cbl` |
-| `/logout` | GET | ログアウト | `logout.cbl` |
-| `/posts/new` | GET/POST | 投稿フォーム | `postnewget.cbl` / `postnewpost.cbl` + `postserv` ADD |
+- **Routing** — path table with HTTP method dispatch and dynamic segments (`/posts/%id`)
+- **Controllers** — one COBOL program per route handler under `src/controllers/`
+- **Templates** — `views/**/*.html` with `{{variables}}`, `{% include %}`, `{% if %}`, `{% for %}`
+- **Layout helper** — `renderpage.cbl` wires layout, CSS, JS, and session context
+- **Forms & sessions** — `application/x-www-form-urlencoded` POST parsing, cookie `ssr_sid`, file-backed sessions
+- **Persistence** — GnuCOBOL indexed file (`data/posts.dat`) with seed data on first build
+- **Static files** — CSS/JS served by Apache from `static/`
 
-- **POST ボディ**: `CONTENT_LENGTH` + stdin（`cgilib.cbl`）
-- **セッション**: Cookie `ssr_sid` + `data/sessions/` ファイルストア
-- **永続化**: indexed file `data/posts.dat`（Docker ビルド時に `seedposts.cbl` で3件シード）
-- **CSS**: `static/app.css` + ページごとの `{{extra_css}}` 注入
-- **JavaScript**: `static/app.js` + `page_script` + `{{extra_js}}` 注入
-- **テンプレート**: `{{var}}` に加え `{% include %}`, `{% if %}`, `{% for %}`（Django 風の最小 subset）
-- **ページ描画**: `renderpage.cbl` が `page-ctx` を layout に渡す（フレームワーク入口）
+## Routes (demo app)
 
-ルーティングとテンプレートは [COBOL on Wheelchair](https://github.com/azac/cobol-on-wheelchair) を参考に、タグ処理は `ssrtemplate.cbl`、ページ組み立ては `renderpage.cbl` に拡張しています。
+| Path | Methods | Handler |
+|---|---|---|
+| `/` | GET | `home.cbl` |
+| `/about` | GET | `about.cbl` |
+| `/posts` | GET | `postslist.cbl` |
+| `/posts/:id` | GET | `postdetail.cbl` |
+| `/login` | GET, POST | `loginform.cbl`, `loginpost.cbl` |
+| `/logout` | GET | `logout.cbl` |
+| `/posts/new` | GET, POST | `postnewget.cbl`, `postnewpost.cbl` |
 
-## ページを追加する（最小手順）
+Login is username-only (no password)—enough for a demo session gate.
 
-1. `src/config.cbl` にルートを1行足す
-2. `src/controllers/mypage.cbl` を書き、`renderpage` を呼ぶ
-3. 必要なら `views/pages/mypage.cow` と `static/pages/mypage.js` を置く
+## Architecture
 
-```cobol
-move spaces to page-ctx
-move "My page" to page-title
-move "pages/mypage.cow" to page-template
-move "pages/mypage.js" to page-script
-call 'renderpage' using page-ctx cgictx
+```text
+HTTP request
+  → Apache (.htaccess → ssr.cgi)
+  → ssr.cbl (router)
+  → controller (*.cbl)
+  → renderpage.cbl or ssrtemplate.cbl
+  → views/layout.html + page template
+  → HTML response
 ```
 
-データ取得が要るページ（投稿一覧など）だけ、`postlistfill` のように COBOL 側で `the-vars` を埋めてから `ssrtemplate` を直呼びします。
+| Piece | Role |
+|---|---|
+| `src/config.cbl` | Route table (path, method, controller name) |
+| `src/controllers/*.cbl` | Request handlers |
+| `views/**/*.html` | HTML templates |
+| `src/postsdata.cbl` | Indexed-file CRUD |
+| `src/renderpage.cbl` | Standard page render entry point |
+| `src/ssrtemplate.cbl` | Template engine |
 
-## 起動
+## Quick start
+
+Requirements: Docker (recommended) or GnuCOBOL + Apache with CGI enabled.
 
 ```bash
+git clone https://github.com/masanori0209/cobol-webfw
+cd cobol-webfw
 docker compose up --build
-./scripts/run-all.sh
 ```
 
-`BASE_URL` を変えればホスト側からも実行できます。
+Open http://127.0.0.1:8080/
+
+Smoke test from the host:
 
 ```bash
 BASE_URL=http://127.0.0.1:8080 ./scripts/run-all.sh
 ```
 
-`run-all.sh` は GET `/`、GET `/posts`、POST `/login`、GET/POST `/posts/new`、簡易ベンチ（10回 GET `/`）まで通します。
+## Add a page
 
-## 行数レポート
+1. Add a route in `src/config.cbl`
+2. Create `src/controllers/mypage.cbl` and call `renderpage`
+3. Add `views/pages/mypage.html` (and optionally `static/pages/mypage.js`)
 
-```bash
-./scripts/count-lines.sh
-cat reports/line-count.txt
+```cobol
+move spaces to page-ctx
+move "My page" to page-title
+move "pages/mypage.html" to page-template
+move "pages/mypage.js" to page-script
+call 'renderpage' using page-ctx cgictx
 ```
 
-拡張版 COBOL 合計は **1481 行** 前後（2026-07 時点）。`ssrtemplate.cbl` が約 400 行、`renderpage.cbl` が約 35 行。
+For list/detail pages that read the indexed file, fill template variables in COBOL (see `postlistfill.cbl`) and call `ssrtemplate` directly instead of `renderpage`.
 
-## スクリーンショット
+## Project layout
 
-```bash
-docker compose up --build -d
-ZENN_IMAGES_DIR=/path/to/m-zenn-dev/images ./scripts/capture-media.sh
+```text
+cobol-webfw/
+├── src/
+│   ├── ssr.cbl              # CGI entry + router
+│   ├── config.cbl           # routes (included by ssr.cbl)
+│   ├── ssrtemplate.cbl      # template engine
+│   ├── renderpage.cbl       # layout render helper
+│   ├── cgilib.cbl           # POST, cookies, sessions
+│   ├── postsdata.cbl        # indexed-file service
+│   └── controllers/         # route handlers
+├── views/
+│   ├── layout.html
+│   ├── partials/
+│   └── pages/               # page templates
+├── static/                  # CSS, JS (Apache static)
+├── data/                    # posts.dat, sessions/ (runtime)
+├── scripts/
+│   ├── build.sh
+│   ├── run-all.sh
+│   └── count-lines.sh
+└── docker-compose.yml
 ```
 
-## ライセンス
+## Build (local)
 
-MIT（COBOL on Wheelchair 由来部分あり）
+If GnuCOBOL is installed:
+
+```bash
+./scripts/build.sh
+# produces ssr.cgi
+```
+
+## Scripts
+
+| Script | Purpose |
+|---|---|
+| `scripts/build.sh` | Compile COBOL to `ssr.cgi` |
+| `scripts/run-all.sh` | HTTP smoke test + simple GET benchmark |
+| `scripts/count-lines.sh` | Line-count report → `reports/line-count.txt` |
+| `scripts/capture-media.sh` | Playwright screenshots (optional; set `ZENN_IMAGES_DIR` or edit output path) |
+
+## Limits
+
+- **CGI only** — spawn-per-request; no FastCGI/process pool in this repo
+- **Demo auth** — username cookie session, not production-grade security
+- **Template engine** — subset of Django-style tags; no `{% extends %}`, auto-escape, or ORM
+- **Not a COBOL production stack** — intended as an open, hackable mini framework on GnuCOBOL + Docker
+
+## License
+
+MIT
